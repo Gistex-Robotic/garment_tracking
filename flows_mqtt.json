@@ -1,0 +1,861 @@
+[
+    {
+        "id": "0e160c1cf4e81968",
+        "type": "mqtt in",
+        "z": "f236b01026917d78",
+        "name": "",
+        "topic": "rfid/gt/tag",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "e5f0905ddaeace5a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 80,
+        "y": 160,
+        "wires": [
+            [
+                "07ef5be3e619acec",
+                "883ccc5048167e88",
+                "5a3733b11037ed16"
+            ]
+        ]
+    },
+    {
+        "id": "07ef5be3e619acec",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 238",
+        "func": "msg.topic = \"SELECT COUNT(*) AS count FROM user WHERE rfid_user = '\"+msg.payload+\"' \";  \nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 140,
+        "wires": [
+            [
+                "b96f0a66083bec7f"
+            ]
+        ]
+    },
+    {
+        "id": "b96f0a66083bec7f",
+        "type": "mysql",
+        "z": "f236b01026917d78",
+        "mydb": "45587a4ed0213a1d",
+        "name": "",
+        "x": 370,
+        "y": 140,
+        "wires": [
+            [
+                "78e409bb6364c2a2"
+            ]
+        ]
+    },
+    {
+        "id": "883ccc5048167e88",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 239",
+        "func": "flow.set(\"tag1\", msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "55b63b52e6a141d2",
+        "type": "mqtt in",
+        "z": "f236b01026917d78",
+        "name": "",
+        "topic": "rfid/gt/mac",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "e5f0905ddaeace5a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 80,
+        "y": 40,
+        "wires": [
+            [
+                "efe60510f7a8b4b6"
+            ]
+        ]
+    },
+    {
+        "id": "efe60510f7a8b4b6",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 323",
+        "func": "flow.set(\"mac1\",msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "417fea38aca627db",
+        "type": "mqtt out",
+        "z": "f236b01026917d78",
+        "name": "",
+        "topic": "rfid/gt/login",
+        "qos": "1",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "e5f0905ddaeace5a",
+        "x": 670,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "78e409bb6364c2a2",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 240",
+        "func": "// Ambil counter dari context\nlet count = flow.get(\"count1\") || 0;\nlet tag = flow.get(\"tag1\");\nlet val = msg.payload[0].count;  // nilai yang masuk\n\nif (val === 1) {\n    msg.payload = 1;\n    count++;  // tambahkan counter\n    flow.set(\"count1\", count);\n    flow.set(\"id1\", tag);\n\n    if (count >= 2) {\n        msg.payload = 0;  // jika sudah dua kali, set payload ke 0\n        count = 0;         // reset counter\n        flow.set(\"count1\", count);\n    }\n}else {\n    return null;\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 140,
+        "wires": [
+            [
+                "417fea38aca627db"
+            ]
+        ]
+    },
+    {
+        "id": "5a3733b11037ed16",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 324",
+        "func": "let stat = flow.get(\"count1\") || 0;\n\nif (stat === 1) {\n    msg.topic = \"SELECT COUNT(*) AS count FROM garment WHERE rfid_garment = '\" + msg.payload + \"' \";\n    return msg;       \n}\n\nreturn null;          \n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 200,
+        "wires": [
+            [
+                "d26c93d7695d33ee"
+            ]
+        ]
+    },
+    {
+        "id": "d26c93d7695d33ee",
+        "type": "mysql",
+        "z": "f236b01026917d78",
+        "mydb": "45587a4ed0213a1d",
+        "name": "",
+        "x": 370,
+        "y": 200,
+        "wires": [
+            [
+                "c895b4325dfd550e"
+            ]
+        ]
+    },
+    {
+        "id": "c895b4325dfd550e",
+        "type": "switch",
+        "z": "f236b01026917d78",
+        "name": "",
+        "property": "payload[0].count",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 490,
+        "y": 200,
+        "wires": [
+            [
+                "b59335960f3f16d0",
+                "2256096cabce9613"
+            ]
+        ]
+    },
+    {
+        "id": "b59335960f3f16d0",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 322",
+        "func": "let tag = flow.get(\"tag1\");\nmsg.topic = \"SELECT COUNT(*) AS count FROM tracking_movement WHERE rfid_garment = '\"+tag+\"' AND last_status = 'OUTPUT_SEWING' \";  \nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 200,
+        "wires": [
+            [
+                "41e10729144779c1"
+            ]
+        ]
+    },
+    {
+        "id": "41e10729144779c1",
+        "type": "mysql",
+        "z": "f236b01026917d78",
+        "mydb": "45587a4ed0213a1d",
+        "name": "",
+        "x": 770,
+        "y": 200,
+        "wires": [
+            [
+                "ba59863ca4a897fd"
+            ]
+        ]
+    },
+    {
+        "id": "2256096cabce9613",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 325",
+        "func": "let id = flow.get(\"id1\");\nmsg.topic = \"SELECT COUNT(*) AS count FROM tracking_movement WHERE last_status = 'OUTPUT_SEWING' AND rfid_user ='\"+id+\"'\";\nreturn msg;   ",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 240,
+        "wires": [
+            [
+                "7d465e62ca14a42d"
+            ]
+        ]
+    },
+    {
+        "id": "7d465e62ca14a42d",
+        "type": "mysql",
+        "z": "f236b01026917d78",
+        "mydb": "45587a4ed0213a1d",
+        "name": "",
+        "x": 770,
+        "y": 240,
+        "wires": [
+            [
+                "e741b9f479e8f373",
+                "fccf1352661df002"
+            ]
+        ]
+    },
+    {
+        "id": "e741b9f479e8f373",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 326",
+        "func": "msg.payload = msg.payload[0].count;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 240,
+        "wires": [
+            [
+                "3c886e95dac5beeb",
+                "a634a386baf1a70c"
+            ]
+        ]
+    },
+    {
+        "id": "3c886e95dac5beeb",
+        "type": "mqtt out",
+        "z": "f236b01026917d78",
+        "name": "",
+        "topic": "rfid/gt/output",
+        "qos": "1",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "e5f0905ddaeace5a",
+        "x": 1090,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "a634a386baf1a70c",
+        "type": "debug",
+        "z": "f236b01026917d78",
+        "name": "debug 56",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1050,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "fccf1352661df002",
+        "type": "debug",
+        "z": "f236b01026917d78",
+        "name": "debug 57",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 850,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "cd57de0de57175af",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 327",
+        "func": "let tag = flow.get(\"tag1\");\nlet id = flow.get(\"id1\");\nmsg.topic = \"INSERT INTO tracking_movement (last_status,rfid_user,nama, bagian, line, rfid_garment, style, item, buyer,wo) SELECT 'OUTPUT_SEWING',u.rfid_user,u.nama, u.bagian,u.line, g.rfid_garment, g.style, g.item, g.buyer, g.wo FROM user u JOIN garment g ON g.rfid_garment = '\"+tag+\"' WHERE u.rfid_user = '\"+id+\"'\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1030,
+        "y": 140,
+        "wires": [
+            [
+                "a84d6f424a626a85"
+            ]
+        ]
+    },
+    {
+        "id": "ba59863ca4a897fd",
+        "type": "switch",
+        "z": "f236b01026917d78",
+        "name": "",
+        "property": "payload[0].count",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 890,
+        "y": 140,
+        "wires": [
+            [
+                "cd57de0de57175af"
+            ]
+        ]
+    },
+    {
+        "id": "a84d6f424a626a85",
+        "type": "mysql",
+        "z": "f236b01026917d78",
+        "mydb": "45587a4ed0213a1d",
+        "name": "",
+        "x": 1070,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "263e2d9045bd483a",
+        "type": "mqtt in",
+        "z": "f236b01026917d78",
+        "name": "",
+        "topic": "rfid/gt1/tag",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "e5f0905ddaeace5a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 80,
+        "y": 480,
+        "wires": [
+            [
+                "2de67f10bf3419ef",
+                "38d9aebeb7413636",
+                "682c4c9d7b4e8c7e"
+            ]
+        ]
+    },
+    {
+        "id": "2de67f10bf3419ef",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 328",
+        "func": "msg.topic = \"SELECT COUNT(*) AS count FROM user WHERE rfid_user = '\"+msg.payload+\"' \";  \nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 460,
+        "wires": [
+            [
+                "7740ff74df6d92e8"
+            ]
+        ]
+    },
+    {
+        "id": "7740ff74df6d92e8",
+        "type": "mysql",
+        "z": "f236b01026917d78",
+        "mydb": "45587a4ed0213a1d",
+        "name": "",
+        "x": 370,
+        "y": 460,
+        "wires": [
+            [
+                "9fad64daf85729f4"
+            ]
+        ]
+    },
+    {
+        "id": "38d9aebeb7413636",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 329",
+        "func": "flow.set(\"tag2\", msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "16e76e4872d93da5",
+        "type": "mqtt in",
+        "z": "f236b01026917d78",
+        "name": "",
+        "topic": "rfid/gt1/mac",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "e5f0905ddaeace5a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 90,
+        "y": 360,
+        "wires": [
+            [
+                "f108192524d3e273"
+            ]
+        ]
+    },
+    {
+        "id": "f108192524d3e273",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 330",
+        "func": "flow.set(\"mac1\",msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "539a6ed40141a4e7",
+        "type": "mqtt out",
+        "z": "f236b01026917d78",
+        "name": "",
+        "topic": "rfid/gt1/login",
+        "qos": "1",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "e5f0905ddaeace5a",
+        "x": 670,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "9fad64daf85729f4",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 331",
+        "func": "// Ambil counter dari context\nlet count = flow.get(\"count2\") || 0;\nlet tag = flow.get(\"tag2\");\nlet val = msg.payload[0].count;  // nilai yang masuk\n\nif (val === 1) {\n    msg.payload = 1;\n    count++;  // tambahkan counter\n    flow.set(\"count2\", count);\n    flow.set(\"id2\", tag);\n\n    if (count >= 2) {\n        msg.payload = 0;  // jika sudah dua kali, set payload ke 0\n        count = 0;         // reset counter\n        flow.set(\"count2\", count);\n    }\n}else {\n    return null;\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 460,
+        "wires": [
+            [
+                "539a6ed40141a4e7"
+            ]
+        ]
+    },
+    {
+        "id": "682c4c9d7b4e8c7e",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 332",
+        "func": "let stat = flow.get(\"count2\") || 0;\n\nif (stat === 1) {\n    msg.topic = \"SELECT COUNT(*) AS count FROM garment WHERE rfid_garment = '\" + msg.payload + \"' \";\n    return msg;       \n}\n\nreturn null;          \n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 520,
+        "wires": [
+            [
+                "2654d0095dba2c1e"
+            ]
+        ]
+    },
+    {
+        "id": "2654d0095dba2c1e",
+        "type": "mysql",
+        "z": "f236b01026917d78",
+        "mydb": "45587a4ed0213a1d",
+        "name": "",
+        "x": 370,
+        "y": 520,
+        "wires": [
+            [
+                "0d690dc5e4a0abe8"
+            ]
+        ]
+    },
+    {
+        "id": "0d690dc5e4a0abe8",
+        "type": "switch",
+        "z": "f236b01026917d78",
+        "name": "",
+        "property": "payload[0].count",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 490,
+        "y": 520,
+        "wires": [
+            [
+                "d662227765dc32d0",
+                "217408c63cc10e22"
+            ]
+        ]
+    },
+    {
+        "id": "d662227765dc32d0",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 333",
+        "func": "let tag = flow.get(\"tag2\");\nmsg.topic = \"SELECT COUNT(*) AS count FROM tracking_movement WHERE rfid_garment = '\"+tag+\"' AND last_status = 'FINISHING' \";  \nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 520,
+        "wires": [
+            [
+                "bd2f2d9940ceec41"
+            ]
+        ]
+    },
+    {
+        "id": "bd2f2d9940ceec41",
+        "type": "mysql",
+        "z": "f236b01026917d78",
+        "mydb": "45587a4ed0213a1d",
+        "name": "",
+        "x": 770,
+        "y": 520,
+        "wires": [
+            [
+                "10b662f6e4ab12f3",
+                "05e1c77e660f343d"
+            ]
+        ]
+    },
+    {
+        "id": "217408c63cc10e22",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 334",
+        "func": "let id = flow.get(\"id2\");\nmsg.topic = \"SELECT COUNT(*) AS count FROM tracking_movement WHERE last_status = 'OUTPUT_SEWING' AND rfid_user ='\"+id+\"'\";\nreturn msg;   ",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 560,
+        "wires": [
+            [
+                "1254883027697ba7"
+            ]
+        ]
+    },
+    {
+        "id": "1254883027697ba7",
+        "type": "mysql",
+        "z": "f236b01026917d78",
+        "mydb": "45587a4ed0213a1d",
+        "name": "",
+        "x": 770,
+        "y": 560,
+        "wires": [
+            [
+                "36350b678a9166f5",
+                "6fe5823c277551ed"
+            ]
+        ]
+    },
+    {
+        "id": "36350b678a9166f5",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 335",
+        "func": "msg.payload = msg.payload[0].count;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 560,
+        "wires": [
+            [
+                "e4eb256dc7be0a33"
+            ]
+        ]
+    },
+    {
+        "id": "6fe5823c277551ed",
+        "type": "debug",
+        "z": "f236b01026917d78",
+        "name": "debug 58",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 900,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "13c35ffb659e126f",
+        "type": "function",
+        "z": "f236b01026917d78",
+        "name": "function 336",
+        "func": "let tag = flow.get(\"tag2\");\nlet id = flow.get(\"id2\");\nmsg.topic = \"INSERT INTO tracking_movement (last_status,rfid_user,nama, bagian, line, rfid_garment, style, item, buyer,wo) SELECT 'FINISHING',u.rfid_user,u.nama, u.bagian,u.line, g.rfid_garment, g.style, g.item, g.buyer, g.wo FROM user u JOIN garment g ON g.rfid_garment = '\"+tag+\"' WHERE u.rfid_user = '\"+id+\"'\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1030,
+        "y": 460,
+        "wires": [
+            [
+                "02d7de2ee36b5ead"
+            ]
+        ]
+    },
+    {
+        "id": "10b662f6e4ab12f3",
+        "type": "switch",
+        "z": "f236b01026917d78",
+        "name": "",
+        "property": "payload[0].count",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 890,
+        "y": 460,
+        "wires": [
+            [
+                "13c35ffb659e126f"
+            ]
+        ]
+    },
+    {
+        "id": "02d7de2ee36b5ead",
+        "type": "mysql",
+        "z": "f236b01026917d78",
+        "mydb": "45587a4ed0213a1d",
+        "name": "",
+        "x": 1090,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e4eb256dc7be0a33",
+        "type": "mqtt out",
+        "z": "f236b01026917d78",
+        "name": "",
+        "topic": "rfid/gt1/output",
+        "qos": "1",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "e5f0905ddaeace5a",
+        "x": 1100,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "05e1c77e660f343d",
+        "type": "debug",
+        "z": "f236b01026917d78",
+        "name": "debug 59",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 910,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "e5f0905ddaeace5a",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "10.5.0.106",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "45587a4ed0213a1d",
+        "type": "MySQLdatabase",
+        "name": "gt",
+        "host": "10.5.0.99",
+        "port": "3306",
+        "db": "db_garmenttracking",
+        "tz": "",
+        "charset": "UTF8"
+    }
+]
