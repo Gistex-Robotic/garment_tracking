@@ -604,7 +604,7 @@ void handleButton()
         buttonMessageActive = true;
         buttonMessageStart = millis();
 
-        showMessage("BELUM DIPROGRAM", " BANGG!!!", 2);
+        showMessage("BELUM DIPROGRAM", "COMING SOON", 2);
       }
     }
   }
