@@ -1,0 +1,16 @@
+# PlatformIO build output
+**/.pio/
+
+# VS Code / PlatformIO temporary files
+**/.vscode/
+
+# Firmware output files
+*.bin
+*.elf
+*.map
+
+# Jangan upload config rahasia
+config.h
+
+#Backup gaes
+*.bak
